@@ -1,0 +1,30 @@
+{
+  "name": "my-social-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.8",
+    "@mui/material": "^7.3.8",
+    "axios": "^1.13.5",
+    "dotenv": "^17.3.1",
+    "electron": "^40.4.0",
+    "electron-builder": "^26.7.0",
+    "n8n": "^2.7.4",
+    "n8n-core": "^2.8.0",
+    "n8n-workflow": "^2.8.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.0",
+    "sqlite3": "^5.1.7"
+  }
+}
