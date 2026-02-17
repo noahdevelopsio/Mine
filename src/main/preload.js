@@ -38,6 +38,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Analytics
   getAnalytics: (options) => ipcRenderer.invoke('get-analytics', options),
   
+  // Advanced AI Features
+  analyzeSentiment: (text) => ipcRenderer.invoke('analyze-sentiment', text),
+  generateVariations: (content, platform, count) => ipcRenderer.invoke('generate-variations', content, platform, count),
+  generateContentIdeas: (trends, industry, count) => ipcRenderer.invoke('generate-content-ideas', trends, industry, count),
+  optimizePostTime: (content, platform, audience) => ipcRenderer.invoke('optimize-post-time', content, platform, audience),
+  checkOllamaStatus: () => ipcRenderer.invoke('check-ollama-status'),
+  
   // System operations
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
   showNotification: (title, body) => ipcRenderer.invoke('show-notification', title, body),
