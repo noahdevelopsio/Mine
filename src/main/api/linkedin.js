@@ -122,6 +122,66 @@ class LinkedInAPI {
     }
   }
 
+  // Get user's feed
+  async getFeed(limit = 20) {
+    try {
+      // LinkedIn doesn't have a direct feed endpoint for personal timeline
+      // This would integrate with LinkedIn's UGC (User Generated Content) API
+      const feed = [
+        {
+          id: 'urn:li:activity:123456789',
+          text: 'Exciting developments in AI technology! The future is now.',
+          author: { name: 'John Doe', username: 'johndoe' },
+          created_at: new Date().toISOString(),
+          public_metrics: { likes: 150, comments: 25, shares: 10 }
+        },
+        {
+          id: 'urn:li:activity:987654321',
+          text: 'Just launched a new project using cutting-edge technologies.',
+          author: { name: 'Jane Smith', username: 'janesmith' },
+          created_at: new Date().toISOString(),
+          public_metrics: { likes: 200, comments: 30, shares: 15 }
+        }
+      ];
+      
+      return feed;
+    } catch (error) {
+      console.error('Error fetching LinkedIn feed:', error);
+      return [];
+    }
+  }
+
+  // Like a post
+  async likePost(postId) {
+    try {
+      // LinkedIn like API would be used here
+      return { success: true, postId };
+    } catch (error) {
+      console.error('Error liking LinkedIn post:', error);
+      return false;
+    }
+  }
+
+  // Get trending topics
+  async getTrends(timeRange = '1h') {
+    try {
+      // LinkedIn doesn't have a direct trends API
+      // This is a mock implementation based on LinkedIn's content patterns
+      const trends = [
+        { title: 'AI in Business', description: 'How AI is transforming business operations', created_at: new Date().toISOString() },
+        { title: 'Remote Work', description: 'The future of remote work and collaboration', created_at: new Date().toISOString() },
+        { title: 'Digital Marketing', description: 'Latest trends in digital marketing strategies', created_at: new Date().toISOString() },
+        { title: 'Leadership', description: 'Modern leadership skills for the digital age', created_at: new Date().toISOString() },
+        { title: 'Innovation', description: 'Driving innovation in established organizations', created_at: new Date().toISOString() }
+      ];
+      
+      return trends;
+    } catch (error) {
+      console.error('Error fetching LinkedIn trends:', error);
+      return [];
+    }
+  }
+
   // Get followed companies
   async getFollowedCompanies() {
     try {

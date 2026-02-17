@@ -23,6 +23,7 @@ const Sidebar = () => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Feed Monitor', icon: <FeedIcon />, path: '/feed-monitor' },
+    { text: 'Trending Topics', icon: <TrendingIcon />, path: '/trending-topics' },
     { text: 'Post Generator', icon: <EditIcon />, path: '/post-generator' },
     { text: 'N8N Workflows', icon: <WorkflowsIcon />, path: '/workflows' },
     { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
