@@ -8,6 +8,8 @@ import {
   Settings as SettingsIcon,
   Analytics as AnalyticsIcon,
   Work as WorkflowsIcon,
+  Psychology as PsychologyIcon,
+  TrendingUp as TrendingIcon,
   Twitter as TwitterIcon,
   LinkedIn as LinkedInIcon,
   Logout as LogoutIcon
@@ -27,6 +29,7 @@ const Sidebar = () => {
     { text: 'Post Generator', icon: <EditIcon />, path: '/post-generator' },
     { text: 'N8N Workflows', icon: <WorkflowsIcon />, path: '/workflows' },
     { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+    { text: 'AI Settings', icon: <PsychologyIcon />, path: '/ai-settings' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
 

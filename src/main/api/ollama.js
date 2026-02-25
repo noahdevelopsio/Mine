@@ -2,8 +2,10 @@ const axios = require('axios');
 
 class OllamaAPI {
   constructor() {
-    this.baseURL = process.env.OLLAMA_URL || 'http://localhost:11434';
-    this.defaultModel = process.env.OLLAMA_MODEL || 'llama3.2';
+    const host = process.env.OLLAMA_HOST || 'localhost';
+    const port = process.env.OLLAMA_PORT || '11434';
+    this.baseURL = `http://${host}:${port}`;
+    this.defaultModel = process.env.DEFAULT_AI_MODEL || 'llama3.2';
     this.fallbackModel = 'mistral';
   }
 

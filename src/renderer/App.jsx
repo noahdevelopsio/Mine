@@ -12,6 +12,7 @@ import TrendingTopics from './pages/TrendingTopics';
 import PostGenerator from './pages/PostGenerator';
 import N8NWorkflows from './pages/N8NWorkflows';
 import Analytics from './pages/Analytics';
+import AISettings from './pages/AISettings';
 import Settings from './pages/Settings';
 
 // Import context
@@ -114,6 +115,7 @@ function App() {
               <Route path="/post-generator" element={<PostGenerator />} />
               <Route path="/workflows" element={<N8NWorkflows />} />
               <Route path="/analytics" element={<Analytics />} />
+              <Route path="/ai-settings" element={<AISettings />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </Box>
