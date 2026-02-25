@@ -6,6 +6,10 @@ const { N8N } = require('n8n');
 // Import API modules
 const twitterAPI = require('./api/twitter');
 const linkedinAPI = require('./api/linkedin');
+const OllamaAPI = require('./api/ollama');
+
+// Initialize Ollama
+const ollama = new OllamaAPI();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -190,6 +194,406 @@ ipcMain.handle('set-user-preferences', async (event, key, value) => {
       db.close();
     });
   });
+});
+
+// N8N Integration
+ipcMain.handle('get-workflows', async () => {
+  try {
+    // Mock workflows for now - will integrate with actual N8N in Phase 3
+    return [
+      {
+        id: '1',
+        name: 'Daily Feed Monitor',
+        description: 'Monitor feeds every hour and suggest high-engagement posts',
+        trigger: 'schedule',
+        schedule: '0 */1 * * *',
+        actions: ['fetch_twitter_feed', 'fetch_linkedin_feed', 'calculate_engagement_scores'],
+        enabled: true,
+        executions: 24
+      },
+      {
+        id: '2',
+        name: 'Trending Topic Alert',
+        description: 'Get notified when new trends emerge in your industry',
+        trigger: 'schedule',
+        schedule: '0 */2 * * *',
+        actions: ['fetch_trends', 'analyze_sentiment', 'send_email_alert'],
+        enabled: true,
+        executions: 12
+      }
+    ];
+  } catch (error) {
+    console.error('Error fetching workflows:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('create-workflow', async (event, workflow) => {
+  try {
+    // Mock workflow creation
+    return {
+      ...workflow,
+      id: Date.now().toString(),
+      status: 'active',
+      createdAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error creating workflow:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('run-workflow', async (event, workflowId) => {
+  try {
+    // Mock workflow execution
+    return {
+      workflowId,
+      status: 'completed',
+      executionTime: Date.now(),
+      result: 'Workflow executed successfully'
+    };
+  } catch (error) {
+    console.error('Error running workflow:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('toggle-workflow', async (event, workflowId, enabled) => {
+  try {
+    // Mock workflow toggle
+    return {
+      workflowId,
+      enabled,
+      status: enabled ? 'active' : 'paused'
+    };
+  } catch (error) {
+    console.error('Error toggling workflow:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('delete-workflow', async (event, workflowId) => {
+  try {
+    // Mock workflow deletion
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting workflow:', error);
+    throw error;
+  }
+});
+
+// Feed Monitoring
+ipcMain.handle('get-feed', async (event, platform, limit) => {
+  try {
+    if (platform === 'twitter') {
+      return await twitterAPI.getFeed(limit);
+    } else if (platform === 'linkedin') {
+      return await linkedinAPI.getFeed(limit);
+    }
+    return [];
+  } catch (error) {
+    console.error('Error getting feed:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('like-post', async (event, platform, postId) => {
+  try {
+    if (platform === 'twitter') {
+      return await twitterAPI.likePost(postId);
+    } else if (platform === 'linkedin') {
+      return await linkedinAPI.likePost(postId);
+    }
+    return false;
+  } catch (error) {
+    console.error('Error liking post:', error);
+    return false;
+  }
+});
+
+ipcMain.handle('get-trends', async (event, platform, timeRange) => {
+  try {
+    if (platform === 'twitter') {
+      return await twitterAPI.getTrends(timeRange);
+    } else if (platform === 'linkedin') {
+      return await linkedinAPI.getTrends(timeRange);
+    }
+    return [];
+  } catch (error) {
+    console.error('Error getting trends:', error);
+    return [];
+  }
+});
+
+// AI Post Generation with Ollama
+ipcMain.handle('generate-post', async (event, topic, platform, options = {}) => {
+  try {
+    // Check if Ollama is available
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      throw new Error('Ollama is not available. Please make sure Ollama is running on localhost:11434');
+    }
+    
+    // Generate post using Ollama
+    const result = await ollama.generatePost(topic, platform, options);
+    
+    // Log generation stats
+    console.log('Post generated successfully:', {
+      model: result.model,
+      duration: result.generation_stats?.total_duration,
+      platform: result.platform
+    });
+    
+    return result;
+  } catch (error) {
+    console.error('Error generating post with Ollama:', error);
+    
+    // Fallback to mock data if Ollama fails
+    return {
+      content: `Generated post about ${topic} for ${platform}. (Ollama unavailable - using fallback)`,
+      hashtags: options.includeHashtags ? [`#${topic.replace(/\s+/g, '')}`, '#AI', '#SocialMedia'] : [],
+      platform: platform,
+      fallback: true,
+      error: error.message
+    };
+  }
+});
+
+ipcMain.handle('improve-draft', async (event, draft, platform) => {
+  try {
+    // Check if Ollama is available
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      throw new Error('Ollama is not available');
+    }
+    
+    // Improve draft using Ollama
+    const result = await ollama.improveDraft(draft, platform);
+    return result;
+  } catch (error) {
+    console.error('Error improving draft with Ollama:', error);
+    
+    // Fallback to basic improvement
+    return `Improved version of: "${draft}". (Ollama unavailable - using fallback)`;
+  }
+});
+
+ipcMain.handle('suggest-hashtags', async (event, content, platform) => {
+  try {
+    // Check if Ollama is available
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      throw new Error('Ollama is not available');
+    }
+    
+    // Get hashtag suggestions from Ollama
+    const hashtags = await ollama.suggestHashtags(content, platform);
+    return hashtags;
+  } catch (error) {
+    console.error('Error suggesting hashtags with Ollama:', error);
+    
+    // Fallback to basic hashtag extraction
+    return ['#AI', '#SocialMedia', '#Marketing', '#ContentCreation', '#Automation'];
+  }
+});
+
+// Advanced AI Features
+ipcMain.handle('analyze-sentiment', async (event, text) => {
+  try {
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      return { sentiment: 'neutral', confidence: 50, explanation: 'Ollama not available' };
+    }
+    
+    const result = await ollama.analyzeSentiment(text);
+    return result;
+  } catch (error) {
+    console.error('Error analyzing sentiment:', error);
+    return { sentiment: 'neutral', confidence: 50, explanation: 'Error in analysis' };
+  }
+});
+
+ipcMain.handle('generate-variations', async (event, content, platform, count = 3) => {
+  try {
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      throw new Error('Ollama is not available');
+    }
+    
+    const variations = await ollama.generateVariations(content, platform, count);
+    return variations;
+  } catch (error) {
+    console.error('Error generating variations:', error);
+    return [content]; // Return original as fallback
+  }
+});
+
+ipcMain.handle('generate-content-ideas', async (event, trends, industry, count = 5) => {
+  try {
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      throw new Error('Ollama is not available');
+    }
+    
+    const ideas = await ollama.generateContentIdeas(trends, industry, count);
+    return ideas;
+  } catch (error) {
+    console.error('Error generating content ideas:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('optimize-post-time', async (event, content, platform, audience) => {
+  try {
+    const isAvailable = await ollama.isAvailable();
+    
+    if (!isAvailable) {
+      return { day: 'Tuesday', time: '9:00 AM', reasoning: 'Ollama not available - using default' };
+    }
+    
+    const recommendation = await ollama.optimizePostTime(content, platform, audience);
+    return recommendation;
+  } catch (error) {
+    console.error('Error optimizing post time:', error);
+    return { day: 'Tuesday', time: '9:00 AM', reasoning: 'Error occurred - using default' };
+  }
+});
+
+ipcMain.handle('check-ollama-status', async () => {
+  try {
+    const isAvailable = await ollama.isAvailable();
+    const models = isAvailable ? await ollama.getAvailableModels() : [];
+    
+    return {
+      available: isAvailable,
+      defaultModel: ollama.defaultModel,
+      fallbackModel: ollama.fallbackModel,
+      availableModels: models.map(m => m.name || m.model),
+      baseURL: ollama.baseURL
+    };
+  } catch (error) {
+    console.error('Error checking Ollama status:', error);
+    return {
+      available: false,
+      error: error.message
+    };
+  }
+});
+
+ipcMain.handle('post-content', async (event, content, platform) => {
+  try {
+    if (platform === 'twitter') {
+      return await twitterAPI.postTweet(content);
+    } else if (platform === 'linkedin') {
+      return await linkedinAPI.postContent(content);
+    }
+    return false;
+  } catch (error) {
+    console.error('Error posting content:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('schedule-post', async (event, content, platform, time) => {
+  try {
+    // Store scheduled post in database
+    const db = new sqlite3.Database(path.join(__dirname, '../data/socialbot.db'));
+    
+    return new Promise((resolve, reject) => {
+      db.run(
+        `INSERT INTO generated_posts (topic, content, platform, scheduled_time, status, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+        [content, content, platform, time, 'scheduled', Date.now()],
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ success: true });
+          }
+          db.close();
+        }
+      );
+    });
+  } catch (error) {
+    console.error('Error scheduling post:', error);
+    throw error;
+  }
+});
+
+// Analytics
+ipcMain.handle('get-analytics', async (event, options) => {
+  try {
+    const db = new sqlite3.Database(path.join(__dirname, '../data/socialbot.db'));
+    
+    return new Promise((resolve, reject) => {
+      // Get basic metrics
+      db.get(
+        `SELECT COUNT(*) as count FROM generated_posts WHERE status = 'scheduled'`,
+        [],
+        (err, totalPosts) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          
+          db.get(
+            `SELECT COUNT(*) as count FROM cached_posts`,
+            [],
+            (err, cachedPosts) => {
+              if (err) {
+                reject(err);
+                return;
+              }
+              
+              resolve({
+                totalPosts: totalPosts.count,
+                totalEngagement: cachedPosts.count * 100, // Mock calculation
+                avgEngagementRate: 5.2,
+                engagementHistory: [120, 150, 180, 200, 220, 250, 280],
+                contentPerformance: [
+                  { title: 'AI Content Generation', engagement: 280, platform: 'twitter' },
+                  { title: 'Social Media Automation', engagement: 250, platform: 'linkedin' },
+                  { title: 'Marketing Trends', engagement: 220, platform: 'twitter' }
+                ],
+                hashtagPerformance: [
+                  { tag: 'AI', usage: 15, reach: 5000 },
+                  { tag: 'SocialMedia', usage: 12, reach: 4500 },
+                  { tag: 'Marketing', usage: 10, reach: 4000 }
+                ],
+                recommendations: [
+                  {
+                    type: 'content',
+                    priority: 'high',
+                    text: 'Focus on AI-related content as it shows highest engagement'
+                  },
+                  {
+                    type: 'timing',
+                    priority: 'medium',
+                    text: 'Post between 9-11 AM for optimal engagement'
+                  },
+                  {
+                    type: 'platform',
+                    priority: 'low',
+                    text: 'LinkedIn shows higher engagement for professional content'
+                  }
+                ]
+              });
+              
+              db.close();
+            }
+          );
+        }
+      );
+    });
+  } catch (error) {
+    console.error('Error getting analytics:', error);
+    throw error;
+  }
 });
 
 module.exports = {

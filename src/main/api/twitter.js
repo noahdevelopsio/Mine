@@ -129,6 +129,67 @@ class TwitterAPI {
     }
   }
 
+  // Get user's feed (timeline)
+  async getFeed(limit = 20) {
+    try {
+      const response = await axios.get(`${this.baseURL}/users/me/timelines/reverse_chronological`, {
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`
+        },
+        params: {
+          max_results: limit,
+          expansions: 'author_id',
+          'tweet.fields': 'created_at,public_metrics,conversation_id',
+          'user.fields': 'name,username,verified'
+        }
+      });
+      
+      return response.data.data || [];
+    } catch (error) {
+      console.error('Error fetching Twitter feed:', error);
+      return [];
+    }
+  }
+
+  // Like a post
+  async likePost(postId) {
+    try {
+      const response = await axios.post(`${this.baseURL}/users/me/likes`, {
+        tweet_id: postId
+      }, {
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error liking Twitter post:', error);
+      return false;
+    }
+  }
+
+  // Get trending topics
+  async getTrends(timeRange = '1h') {
+    try {
+      // Twitter doesn't have a direct trends endpoint for specific time ranges
+      // This is a mock implementation that would integrate with Twitter's trends API
+      const trends = [
+        { name: '#AI', tweet_volume: 50000, created_at: new Date().toISOString() },
+        { name: '#SocialMedia', tweet_volume: 30000, created_at: new Date().toISOString() },
+        { name: '#Marketing', tweet_volume: 25000, created_at: new Date().toISOString() },
+        { name: '#Technology', tweet_volume: 20000, created_at: new Date().toISOString() },
+        { name: '#Innovation', tweet_volume: 15000, created_at: new Date().toISOString() }
+      ];
+      
+      return trends;
+    } catch (error) {
+      console.error('Error fetching Twitter trends:', error);
+      return [];
+    }
+  }
+
   // Get trending topics
   async getTrends(woeid = 1) { // WOEID 1 is worldwide
     try {

@@ -8,9 +8,11 @@ import { createTheme } from '@mui/material/styles';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import FeedMonitor from './pages/FeedMonitor';
+import TrendingTopics from './pages/TrendingTopics';
 import PostGenerator from './pages/PostGenerator';
 import N8NWorkflows from './pages/N8NWorkflows';
 import Analytics from './pages/Analytics';
+import AISettings from './pages/AISettings';
 import Settings from './pages/Settings';
 
 // Import context
@@ -109,9 +111,11 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/feed-monitor" element={<FeedMonitor />} />
+              <Route path="/trending-topics" element={<TrendingTopics />} />
               <Route path="/post-generator" element={<PostGenerator />} />
               <Route path="/workflows" element={<N8NWorkflows />} />
               <Route path="/analytics" element={<Analytics />} />
+              <Route path="/ai-settings" element={<AISettings />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </Box>

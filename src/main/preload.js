@@ -20,6 +20,30 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getWorkflows: () => ipcRenderer.invoke('get-workflows'),
   createWorkflow: (workflow) => ipcRenderer.invoke('create-workflow', workflow),
   runWorkflow: (workflowId) => ipcRenderer.invoke('run-workflow', workflowId),
+  toggleWorkflow: (workflowId, enabled) => ipcRenderer.invoke('toggle-workflow', workflowId, enabled),
+  deleteWorkflow: (workflowId) => ipcRenderer.invoke('delete-workflow', workflowId),
+
+  // Feed Monitoring
+  getFeed: (platform, limit) => ipcRenderer.invoke('get-feed', platform, limit),
+  likePost: (platform, postId) => ipcRenderer.invoke('like-post', platform, postId),
+  getTrends: (platform, timeRange) => ipcRenderer.invoke('get-trends', platform, timeRange),
+
+  // AI Post Generation
+  generatePost: (topic, platform, options) => ipcRenderer.invoke('generate-post', topic, platform, options),
+  improveDraft: (draft, platform) => ipcRenderer.invoke('improve-draft', draft, platform),
+  suggestHashtags: (content, platform) => ipcRenderer.invoke('suggest-hashtags', content, platform),
+  postContent: (content, platform) => ipcRenderer.invoke('post-content', content, platform),
+  schedulePost: (content, platform, time) => ipcRenderer.invoke('schedule-post', content, platform, time),
+
+  // Analytics
+  getAnalytics: (options) => ipcRenderer.invoke('get-analytics', options),
+  
+  // Advanced AI Features
+  analyzeSentiment: (text) => ipcRenderer.invoke('analyze-sentiment', text),
+  generateVariations: (content, platform, count) => ipcRenderer.invoke('generate-variations', content, platform, count),
+  generateContentIdeas: (trends, industry, count) => ipcRenderer.invoke('generate-content-ideas', trends, industry, count),
+  optimizePostTime: (content, platform, audience) => ipcRenderer.invoke('optimize-post-time', content, platform, audience),
+  checkOllamaStatus: () => ipcRenderer.invoke('check-ollama-status'),
   
   // System operations
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
